@@ -1,0 +1,87 @@
+body {
+    background: linear-gradient(to bottom, #ffffff, #e8f5e9);
+    font-family: 'Segoe UI', sans-serif;
+    padding: 40px;
+    color: #333;
+}
+
+h2, h4, h5 {
+    color: #000000;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+label {
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+
+.container {
+    background-color: #ffffff;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 4px 15px rgba(0, 128, 0, 0.1);
+}
+
+select, input {
+    border: 1px solid #c8e6c9;
+    border-radius: 6px;
+    padding: 10px;
+}
+
+select:focus, input:focus {
+    outline: none;
+    border-color: #43a047;
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+}
+
+.btn-success {
+    background-color: #43a047;
+    border: none;
+    font-weight: 600;
+}
+
+.btn-success:hover {
+    background-color: #2e7d32;
+}
+
+.btn-primary {
+    background-color: #2e7d32;
+    border: none;
+    font-weight: 600;
+}
+
+.btn-primary:hover {
+    background-color: #1b5e20;
+}
+
+.btn-danger {
+    background-color: #c62828;
+    border: none;
+}
+
+.btn-danger:hover {
+    background-color: #b71c1c;
+}
+
+.table th {
+    background-color: #a5d6a7;
+    color: #1b5e20;
+    font-weight: bold;
+}
+
+.table {
+    background-color: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 128, 0, 0.1);
+}
+
+#total {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-top: 15px;
+    color: #2e7d32;
+}
+
+

@@ -1,0 +1,72 @@
+body {
+    margin: 0;
+    padding: 30px;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(to bottom right, #e8f5e9, #ffffff);
+    color: #333;
+}
+
+h2, h4 {
+    color: #1b5e20;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+.table {
+    background-color: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 128, 0, 0.1);
+}
+
+.table th {
+    background-color: #a5d6a7;
+    color: #1b5e20;
+    font-weight: 600;
+}
+
+.table td, .table th {
+    text-align: center;
+    vertical-align: middle;
+}
+
+form {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 128, 0, 0.08);
+    margin-top: 20px;
+}
+
+input, select {
+    border-radius: 6px;
+    border: 1px solid #c8e6c9;
+    padding: 8px 12px;
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: #43a047;
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+}
+
+.btn-primary {
+    background-color: #2e7d32;
+    border: none;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+}
+
+.btn-primary:hover {
+    background-color: #1b5e20;
+}
+
+.btn-danger {
+    background-color: #c62828;
+    border: none;
+    transition: background-color 0.2s ease;
+}
+
+.btn-danger:hover {
+    background-color: #b71c1c;
+}
