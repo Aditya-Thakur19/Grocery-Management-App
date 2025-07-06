@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Grocery Management App</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+
+</head>
+<body class="container mt-4">
+    <h2 class="mb-4">Grocery Product List</h2>
+
+    <table class="table table-bordered" id="productTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>UOM</th>
+                <th>Price/Unit</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <hr>
+
+    <h4>Add New Product</h4>
+    <form id="productForm">
+        <input type="text" placeholder="Product Name" id="product_name" class="form-control mb-2" required>
+        <select id="uom_id" class="form-control mb-2"></select>
+        <input type="number" placeholder="Price per Unit" id="price_per_unit" class="form-control mb-2" required>
+        <button class="btn btn-primary">Add Product</button>
+    </form>
+
+    <script>
+        async function loadProducts() {
+            const res = await fetch('/getProducts');
+            const data = await res.json();
+            const tbody = document.querySelector("#productTable tbody");
+            tbody.innerHTML = "";
+            data.forEach(p => {
+                tbody.innerHTML += `
+                <tr>
+                    <td>${p.product_id}</td>
+                    <td>${p.product_name}</td>
+                    <td>${p.uom_name}</td>
+                    <td>${p.price_per_unit}</td>
+                    <td><button class="btn btn-danger btn-sm" onclick="deleteProduct(${p.product_id})">Delete</button></td>
+                </tr>`;
+            });
+        }
+
+        async function loadUOMs() {
+            const res = await fetch('/getUOM');
+            const data = await res.json();
+            const select = document.getElementById("uom_id");
+            select.innerHTML = "";
+            data.forEach(u => {
+                select.innerHTML += `<option value="${u.uom_id}">${u.uom_name}</option>`;
+            });
+        }
+
+        async function deleteProduct(id) {
+            await fetch('/deleteProduct', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ product_id: id })
+            });
+            loadProducts();
+        }
+
+        document.getElementById("productForm").addEventListener("submit", async e => {
+            e.preventDefault();
+            const payload = {
+                product_name: document.getElementById("product_name").value,
+                uom_id: document.getElementById("uom_id").value,
+                price_per_unit: document.getElementById("price_per_unit").value,
+            };
+            await fetch('/insertProduct', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            e.target.reset();
+            loadProducts();
+        });
+
+        loadUOMs();
+        loadProducts();
+    </script>
+</body>
+</html>

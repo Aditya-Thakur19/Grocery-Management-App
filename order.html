@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Place Order</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='order.css') }}">
+
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h2>Place New Order</h2>
+
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <label for="product" class="form-label">Select Product:</label>
+                <select id="product" class="form-select"></select>
+            </div>
+            <div class="col-md-3">
+                <label for="quantity" class="form-label">Quantity:</label>
+                <input type="number" id="quantity" class="form-control" min="1" value="1">
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <button onclick="addToOrder()" class="btn btn-success w-100">Add to Order</button>
+            </div>
+        </div>
+
+        <h4>Current Order</h4>
+        <table class="table table-bordered" id="orderTable">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>UOM</th>
+                    <th>Price/Unit</th>
+                    <th>Quantity</th>
+                    <th>Subtotal</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <h5>Total: ₹<span id="total">0</span></h5>
+        <button class="btn btn-primary" onclick="placeOrder()">Place Order</button>
+    </div>
+
+    <!-- ✅ Modal for Order Confirmation -->
+    <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title" id="confirmationModalLabel">Order Confirmed!</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Thank you! Please pay the amount at the counter.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-bs-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let allProducts = [];
+        let orderItems = [];
+
+        async function fetchProducts() {
+            const res = await fetch('/getProducts');
+            allProducts = await res.json();
+            const productSelect = document.getElementById('product');
+            productSelect.innerHTML = allProducts.map(p =>
+                `<option value="${p.product_id}">${p.product_name}</option>`
+            ).join('');
+        }
+
+        function addToOrder() {
+            const id = +document.getElementById('product').value;
+            const qty = +document.getElementById('quantity').value;
+
+            if (!id || qty < 1) {
+                alert('Please select a product and valid quantity!');
+                return;
+            }
+
+            const product = allProducts.find(p => p.product_id === id);
+            const subtotal = qty * product.price_per_unit;
+
+            orderItems.push({
+                product_id: id,
+                product_name: product.product_name,
+                uom_name: product.uom_name,
+                price_per_unit: product.price_per_unit,
+                quantity: qty,
+                subtotal: subtotal
+            });
+
+            renderOrder();
+        }
+
+        function renderOrder() {
+            const tbody = document.querySelector('#orderTable tbody');
+            tbody.innerHTML = '';
+            let total = 0;
+
+            orderItems.forEach((item, index) => {
+                total += item.subtotal;
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${item.product_name}</td>
+                        <td>${item.uom_name}</td>
+                        <td>${item.price_per_unit}</td>
+                        <td>${item.quantity}</td>
+                        <td>${item.subtotal}</td>
+                        <td><button class="btn btn-danger btn-sm" onclick="removeItem(${index})">Remove</button></td>
+                    </tr>
+                `;
+            });
+
+            document.getElementById('total').innerText = total;
+        }
+
+        function removeItem(index) {
+            orderItems.splice(index, 1);
+            renderOrder();
+        }
+
+        async function placeOrder() {
+            if (orderItems.length === 0) return alert("Add items first!");
+
+            const total = orderItems.reduce((sum, item) => sum + item.subtotal, 0);
+
+            const orderPayload = {
+                customer_name: "",
+                total: total,
+                items: orderItems.map(item => ({
+                    product_id: item.product_id,
+                    quantity: item.quantity,
+                    price: item.price_per_unit
+                }))
+            };
+
+            await fetch('/insertOrder', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(orderPayload)
+            });
+
+            // Show confirmation modal
+            const modal = new bootstrap.Modal(document.getElementById('confirmationModal'));
+            modal.show();
+
+            // Clear order
+            orderItems = [];
+            renderOrder();
+        }
+
+        fetchProducts();
+    </script>
+</body>
+</html>
